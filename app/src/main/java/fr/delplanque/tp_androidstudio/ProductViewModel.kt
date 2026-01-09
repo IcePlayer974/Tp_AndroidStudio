@@ -13,6 +13,7 @@ class ProductViewModel : ViewModel() {
     private val _categories = MutableStateFlow<List<String>>(emptyList())
     val categories: StateFlow<List<String>> = _categories
 
+
     init {
         loadCategories()
         loadProducts()
@@ -37,4 +38,8 @@ class ProductViewModel : ViewModel() {
             } catch (e: Exception) {}
         }
     }
+
+
+
+
 }
