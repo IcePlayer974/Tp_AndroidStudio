@@ -16,7 +16,7 @@ data class Rating(
     val count: Int
 )
 
-// Classe pour gérer le panier avec quantité [cite: 22, 24]
+
 data class CartItem(
     val product: Product,
     var quantity: Int

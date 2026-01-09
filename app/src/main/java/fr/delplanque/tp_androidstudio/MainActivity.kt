@@ -40,21 +40,26 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
-                        Column(modifier = Modifier.statusBarsPadding()) {
-                            Text(
-                                text = "Mon E-Commerce",
-                                style = MaterialTheme.typography.headlineMedium,
-                                modifier = Modifier.padding(16.dp)
-                            )
+                        Surface(
+                            color = MaterialTheme.colorScheme.surface,
+                            tonalElevation = 3.dp
+                        ) {
+                            Column(modifier = Modifier.statusBarsPadding()) {
+                                Text(
+                                    text = "Arnaque Land",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    modifier = Modifier.padding(16.dp)
+                                )
 
-                            CategorySelector(
-                                categories = categories,
-                                selectedCategory = selectedCategory,
-                                onCategorySelected = { category ->
-                                    selectedCategory = category
-                                    viewModel.loadProducts(category)
-                                }
-                            )
+                                CategorySelector(
+                                    categories = categories,
+                                    selectedCategory = selectedCategory,
+                                    onCategorySelected = { category ->
+                                        selectedCategory = category
+                                        viewModel.loadProducts(category)
+                                    }
+                                )
+                            }
                         }
                     }
                 ) { innerPadding ->
