@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import fr.delplanque.tp_androidstudio.ui.theme.Tp_AndroidStudioTheme
 
+
 class MainActivity : ComponentActivity() {
 
     private val viewModel: ProductViewModel by viewModels()
