@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,8 @@ class MainActivity : ComponentActivity() {
             Tp_AndroidStudioTheme {
                 val navController = rememberNavController()
                 val products by viewModel.products.collectAsState()
+                val productViewModel: ProductViewModel = viewModel()
+                val cartViewModel: CartViewModel = viewModel()
 
                 NavHost(navController = navController, startDestination = "productList") {
                     composable("productList") {
@@ -53,8 +56,16 @@ class MainActivity : ComponentActivity() {
                         val productId = backStackEntry.arguments?.getInt("productId")
                         val product = products.find { it.id == productId }
                         product?.let {
-                            ProductDetailScreen(product = it, onBack = { navController.popBackStack() })
+                            ProductDetailScreen(
+                                product = it,
+                                onBack = { navController.popBackStack()},
+                                onAddToCart = { p -> CartViewModel.addToCart(p)},
+                                onGoToCart = {navController.navigate("cart")}
+                                )
                         }
+                    }
+                    composable("cart") {
+                        CartScreen(viewModel = cartViewModel)
                     }
                 }
             }
