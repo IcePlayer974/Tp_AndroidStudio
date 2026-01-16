@@ -8,7 +8,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,11 +24,11 @@ import coil.compose.AsyncImage
 fun CartScreen(
     viewModel: CartViewModel,
     onBackToHome: () -> Unit,
-    navController: NavController
+    onGoToHistory: () -> Unit
 ) {
     val cartItems by viewModel.cartItems.collectAsState(initial = emptyList())
     val total by viewModel.totalPrice.collectAsState()
-    var  showDialog by remember { mutableStateOf(false)}
+    var showDialog by remember { mutableStateOf(false) }
 
 
     Scaffold(
@@ -41,9 +40,11 @@ fun CartScreen(
                         Icon(Icons.Default.Home, contentDescription = "Accueil")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
-                )
+                actions = {
+                    TextButton(onClick = onGoToHistory) {
+                        Text("Historique")
+                    }
+                }
             )
         }
     ) { innerPadding ->
@@ -111,19 +112,19 @@ fun CartScreen(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text(text = "Félicitations !") },
-            text = { Text("Votre commande a été validée avec succès.") },
+            title = { Text("Confirmation") },
+            text = { Text("Valider l'achat pour un montant de ${String.format("%.2f €", total)} ?") },
             confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.validateOrder() // Appelle la logique
-                        showDialog = false
-                        // Optionnel : Naviguer vers l'accueil ou l'historique
-                        // navController.navigate("history")
-                    }
-                ) {
-                    Text("OK")
+                Button(onClick = {
+                    viewModel.validateOrder()
+                    showDialog = false
+                    onGoToHistory()
+                }) {
+                    Text("Oui, acheter")
                 }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) { Text("Annuler") }
             }
         )
     }
