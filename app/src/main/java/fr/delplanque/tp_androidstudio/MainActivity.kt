@@ -171,7 +171,7 @@ fun ProductListScreen(
                     TopAppBar(
                         title = {
                             Text(
-                                "Mon E-commerce",
+                                "ArnacShop",
                                 style = MaterialTheme.typography.headlineMedium,
                                 modifier = Modifier.clickable {
                                     // Action quand on clique sur le titre (ex: recharger tout)
