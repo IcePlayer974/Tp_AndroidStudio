@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,6 +29,21 @@ import coil.compose.AsyncImage
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.room.util.TableInfo
 import fr.delplanque.tp_androidstudio.ui.theme.Tp_AndroidStudioTheme
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val viewModel: ProductViewModel by viewModels()
@@ -94,69 +110,100 @@ fun ProductListScreen(
     val products by viewModel.sortedProducts.collectAsState()
     val categories by viewModel.categories.collectAsState()
     val currentSort by viewModel.sortOption.collectAsState()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
     var selectedCategory by remember { mutableStateOf("all") }
 
-    Scaffold(
-        topBar = {
-            Column {
-                TopAppBar(
-                    title = {
-                        Text(
-                            "Mon E-commerce",
-                            style = MaterialTheme.typography.headlineMedium,
-                            modifier = Modifier.clickable {
-                                // Action quand on clique sur le titre (ex: recharger tout)
-                                viewModel.loadProducts("all")
-                            }
-                        )
-                    },
-
-                    actions = {
-                        IconButton(onClick = onGoToCart) {
-                            Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Default.ShoppingCart,
-                                contentDescription = "Panier"
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    )
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Text(
+                    "Catégories",
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.titleLarge
                 )
-                Surface(
-                    color = MaterialTheme.colorScheme.surface,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column {
-                        CategorySelector(
-                            categories = categories,
-                            selectedCategory = selectedCategory,
-                            onCategorySelected = { category ->
-                                selectedCategory = category
-                                viewModel.loadProducts(category)
-                            }
-                        )
-                        SortSelector(
-                            currentSort = currentSort,
-                            onSortSelected = { viewModel.setSortOption(it) }
-                        )
-                    }
+                HorizontalDivider()
+                // Liste des catégories dans le burger
+                categories.forEach { category ->
+                    NavigationDrawerItem(
+                        label = { Text(category.replaceFirstChar { it.uppercase() }) },
+                        selected = (category == selectedCategory),
+                        onClick = {
+                            selectedCategory = category
+                            viewModel.loadProducts(category)
+                            scope.launch { drawerState.close() }
+                        },
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                    )
+                }
+            }
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                Column {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                "Mon E-commerce",
+                                style = MaterialTheme.typography.headlineMedium,
+                                modifier = Modifier.clickable {
+                                    // Action quand on clique sur le titre (ex: recharger tout)
+                                    viewModel.loadProducts("all")
+                                }
+                            )
+                        },
 
+                        actions = {
+                            IconButton(onClick = onGoToCart) {
+                                Icon(
+                                    imageVector = androidx.compose.material.icons.Icons.Default.ShoppingCart,
+                                    contentDescription = "Panier"
+                                )
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        )
+                    )
+                    Surface(
+                        color = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(start = 8.dp)
+                        ) {
+                            // Icône Burger à gauche
+                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                Icon(Icons.Default.Menu, contentDescription = "Menu")
+                            }
+
+                            // Liste déroulante de tri à droite
+                            Box(modifier = Modifier.weight(1f)) {
+                                SortDropdown(
+                                    currentSort = currentSort,
+                                    onSortSelected = { viewModel.setSortOption(it) }
+                                )
+                            }
+                        }
+
+                    }
+                    HorizontalDivider()
                 }
 
-                HorizontalDivider()
             }
-
-        }
-    ) { innerPadding ->
-        if (products.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else {
-            LazyColumn(contentPadding = innerPadding, modifier = Modifier.fillMaxSize()) {
-                items(products) { product ->
-                    ProductItemRow(product = product) { onProductClick(product.id) }
+        ) { innerPadding ->
+            if (products.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                LazyColumn(contentPadding = innerPadding, modifier = Modifier.fillMaxSize()) {
+                    items(products) { product ->
+                        ProductItemRow(product = product) { onProductClick(product.id) }
+                    }
                 }
             }
         }
@@ -190,6 +237,40 @@ fun SortSelector(currentSort: SortOption, onSortSelected: (SortOption) -> Unit) 
                 onClick = { onSortSelected(option) },
                 label = { Text(option.label, style = MaterialTheme.typography.bodySmall) }
             )
+        }
+    }
+}
+
+@Composable
+fun SortDropdown(currentSort: SortOption, onSortSelected: (SortOption) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        OutlinedButton(
+            onClick = { expanded = true },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Trier par : ${currentSort.label}")
+            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth(0.9f) // Largeur du menu
+        ) {
+            SortOption.entries.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option.label) },
+                    onClick = {
+                        onSortSelected(option)
+                        expanded = false
+                    },
+                    leadingIcon = {
+                        if (option == currentSort) Icon(Icons.Default.Check, contentDescription = null)
+                    }
+                )
+            }
         }
     }
 }
