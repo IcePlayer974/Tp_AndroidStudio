@@ -8,9 +8,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -21,10 +23,13 @@ import coil.compose.AsyncImage
 @Composable
 fun CartScreen(
     viewModel: CartViewModel,
-    onBackToHome: () -> Unit
+    onBackToHome: () -> Unit,
+    onGoToHistory: () -> Unit
 ) {
-    val cartItems by viewModel.cartItems.collectAsState()
+    val cartItems by viewModel.cartItems.collectAsState(initial = emptyList())
     val total by viewModel.totalPrice.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
+
 
     Scaffold(
         topBar = {
@@ -35,9 +40,11 @@ fun CartScreen(
                         Icon(Icons.Default.Home, contentDescription = "Accueil")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
-                )
+                actions = {
+                    TextButton(onClick = onGoToHistory) {
+                        Text("Historique")
+                    }
+                }
             )
         }
     ) { innerPadding ->
@@ -93,7 +100,7 @@ fun CartScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { /* Action valider */ },
+                    onClick = { showDialog = true },
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium
                 ) {
@@ -101,6 +108,25 @@ fun CartScreen(
                 }
             }
         }
+    }
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Confirmation") },
+            text = { Text("Valider l'achat pour un montant de ${String.format("%.2f €", total)} ?") },
+            confirmButton = {
+                Button(onClick = {
+                    viewModel.validateOrder()
+                    showDialog = false
+                    onGoToHistory()
+                }) {
+                    Text("Oui, acheter")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) { Text("Annuler") }
+            }
+        )
     }
 }
 

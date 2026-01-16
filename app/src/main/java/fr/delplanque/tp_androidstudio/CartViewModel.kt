@@ -12,25 +12,48 @@ import kotlinx.coroutines.launch
 class CartViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = AppDatabase.getDatabase(application).cartDao()
 
-    // Liste des produits dans le panier (observée par l'UI)
+    // Panier
     val cartItems: StateFlow<List<CartEntity>> = dao.getAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    // Calcul du total en temps réel [cite: 162]
+    // Historique (Nouveau)
+    val orderHistory: StateFlow<List<OrderEntity>> = dao.getAllOrders()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // Total
     val totalPrice: StateFlow<Double> = cartItems.map { items ->
         items.sumOf { it.price * it.quantity }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
 
-    // Ajouter au panier (gère l'incrémentation si existe déjà) [cite: 159]
+    // --- FONCTION MANQUANTE CORRIGÉE ---
+    fun validateOrder() {
+        viewModelScope.launch {
+            val currentItems = cartItems.value
+            if (currentItems.isNotEmpty()) {
+                val total = currentItems.sumOf { it.price * it.quantity }
+                val count = currentItems.sumOf { it.quantity }
+
+                // 1. Créer la commande
+                val order = OrderEntity(
+                    date = System.currentTimeMillis(),
+                    totalAmount = total,
+                    itemCount = count
+                )
+                // 2. Sauvegarder dans l'historique
+                dao.insertOrder(order)
+                // 3. Vider le panier
+                dao.clearCart()
+            }
+        }
+    }
+
     fun addToCart(product: Product) {
         viewModelScope.launch {
             val existingItem = dao.getProductById(product.id)
             if (existingItem != null) {
-                // Si le produit existe, on augmente la quantité
                 val updatedItem = existingItem.copy(quantity = existingItem.quantity + 1)
                 dao.insert(updatedItem)
             } else {
-                // Sinon on l'ajoute
                 val newItem = CartEntity(
                     id = product.id,
                     title = product.title,
@@ -43,7 +66,6 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // Supprimer ou décrémenter un produit [cite: 158]
     fun removeFromCart(item: CartEntity) {
         viewModelScope.launch {
             if (item.quantity > 1) {
@@ -60,7 +82,6 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // Supprimer complètement une ligne (optionnel mais pratique)
     fun deleteItem(item: CartEntity) {
         viewModelScope.launch {
             dao.delete(item)
