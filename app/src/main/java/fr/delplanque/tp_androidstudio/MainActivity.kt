@@ -43,7 +43,15 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import kotlinx.coroutines.launch
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.List
+import androidx.compose.ui.graphics.vector.ImageVector
 
 class MainActivity : ComponentActivity() {
     private val viewModel: ProductViewModel by viewModels()
@@ -62,6 +70,7 @@ class MainActivity : ComponentActivity() {
                     composable("productList") {
                         ProductListScreen(
                             viewModel = viewModel,
+                            cartViewModel = cartViewModel,
                             onProductClick = { productId ->
                                 navController.navigate("productDetail/$productId")
                             },
@@ -104,6 +113,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ProductListScreen(
     viewModel: ProductViewModel,
+    cartViewModel: CartViewModel,
     onProductClick: (Int) -> Unit,
     onGoToCart: () -> Unit)
 {
@@ -112,6 +122,7 @@ fun ProductListScreen(
     val currentSort by viewModel.sortOption.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val cartCount by cartViewModel.cartCount.collectAsState()
     var selectedCategory by remember { mutableStateOf("all") }
 
     ModalNavigationDrawer(
@@ -127,6 +138,12 @@ fun ProductListScreen(
                 // Liste des catégories dans le burger
                 categories.forEach { category ->
                     NavigationDrawerItem(
+                        icon = {
+                            Icon(
+                                imageVector = getCategoryIcon(category),
+                                contentDescription = null
+                            )
+                        },
                         label = { Text(category.replaceFirstChar { it.uppercase() }) },
                         selected = (category == selectedCategory),
                         onClick = {
@@ -157,10 +174,24 @@ fun ProductListScreen(
 
                         actions = {
                             IconButton(onClick = onGoToCart) {
-                                Icon(
+                                BadgedBox(
+                                    badge = {
+                                        if (cartCount > 0) {
+                                            Badge {
+                                                Text(text = cartCount.toString())
+                                            }
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.ShoppingCart,
+                                        contentDescription = "Panier"
+                                    )
+                                }
+                                /*Icon(
                                     imageVector = androidx.compose.material.icons.Icons.Default.ShoppingCart,
                                     contentDescription = "Panier"
-                                )
+                                )*/
                             }
                         },
                         colors = TopAppBarDefaults.topAppBarColors(
@@ -175,12 +206,10 @@ fun ProductListScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(start = 8.dp)
                         ) {
-                            // Icône Burger à gauche
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Icon(Icons.Default.Menu, contentDescription = "Menu")
                             }
 
-                            // Liste déroulante de tri à droite
                             Box(modifier = Modifier.weight(1f)) {
                                 SortDropdown(
                                     currentSort = currentSort,
@@ -207,6 +236,18 @@ fun ProductListScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun getCategoryIcon(category: String): ImageVector {
+    return when (category.lowercase()) {
+        "electronics" -> Icons.Default.Settings
+        "jewelery" -> Icons.Default.Star
+        "men's clothing" -> Icons.Default.Person
+        "women's clothing" -> Icons.Default.Face
+        "all" -> Icons.Default.List
+        else -> Icons.Default.List
     }
 }
 
