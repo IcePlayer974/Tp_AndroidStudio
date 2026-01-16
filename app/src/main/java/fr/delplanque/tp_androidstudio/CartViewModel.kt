@@ -54,6 +54,12 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun increaseQuantity(item: CartEntity) {
+        viewModelScope.launch {
+            dao.insert(item.copy(quantity = item.quantity + 1))
+        }
+    }
+
     // Supprimer complètement une ligne (optionnel mais pratique)
     fun deleteItem(item: CartEntity) {
         viewModelScope.launch {
