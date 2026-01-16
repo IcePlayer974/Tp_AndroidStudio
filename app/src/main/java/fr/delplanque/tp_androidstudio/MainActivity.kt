@@ -91,8 +91,9 @@ fun ProductListScreen(
     onProductClick: (Int) -> Unit,
     onGoToCart: () -> Unit)
 {
-    val products by viewModel.products.collectAsState()
+    val products by viewModel.sortedProducts.collectAsState()
     val categories by viewModel.categories.collectAsState()
+    val currentSort by viewModel.sortOption.collectAsState()
     var selectedCategory by remember { mutableStateOf("all") }
 
     Scaffold(
@@ -126,15 +127,23 @@ fun ProductListScreen(
                     color = MaterialTheme.colorScheme.surface,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    CategorySelector(
-                        categories = categories,
-                        selectedCategory = selectedCategory,
-                        onCategorySelected = { category ->
-                            selectedCategory = category
-                            viewModel.loadProducts(category)
-                        }
-                    )
+                    Column {
+                        CategorySelector(
+                            categories = categories,
+                            selectedCategory = selectedCategory,
+                            onCategorySelected = { category ->
+                                selectedCategory = category
+                                viewModel.loadProducts(category)
+                            }
+                        )
+                        SortSelector(
+                            currentSort = currentSort,
+                            onSortSelected = { viewModel.setSortOption(it) }
+                        )
+                    }
+
                 }
+
                 HorizontalDivider()
             }
 
@@ -168,6 +177,23 @@ fun CategorySelector(categories: List<String>, selectedCategory: String, onCateg
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SortSelector(currentSort: SortOption, onSortSelected: (SortOption) -> Unit) {
+    LazyRow(
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(SortOption.entries) { option ->
+            FilterChip(
+                selected = (option == currentSort),
+                onClick = { onSortSelected(option) },
+                label = { Text(option.label, style = MaterialTheme.typography.bodySmall) }
+            )
+        }
+    }
+}
+
 @Composable
 fun ProductItemRow(product: Product, onClick: () -> Unit) {
     Card(modifier = Modifier
@@ -179,7 +205,11 @@ fun ProductItemRow(product: Product, onClick: () -> Unit) {
             Spacer(Modifier.width(16.dp))
             Column {
                 Text(product.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text("${product.price} €", fontWeight = FontWeight.Bold)
+                Row {
+                    Text("${product.price} €", fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.width(8.dp))
+                    Text("⭐ ${product.rating.rate}", color = MaterialTheme.colorScheme.secondary)
+                }
             }
         }
     }
