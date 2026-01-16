@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
+
 
 class CartViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = AppDatabase.getDatabase(application).cartDao()
@@ -25,6 +27,11 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
         items.sumOf { it.price * it.quantity }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
 
+    val cartCount: StateFlow<Int> = cartItems.map { items ->
+        items.sumOf { it.quantity }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    // Ajouter au panier (gère l'incrémentation si existe déjà) [cite: 159]
     // --- FONCTION MANQUANTE CORRIGÉE ---
     fun validateOrder() {
         viewModelScope.launch {

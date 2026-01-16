@@ -21,3 +21,10 @@ data class CartItem(
     val product: Product,
     var quantity: Int
 )
+
+enum class SortOption(val label: String) {
+    NONE("Aucun"),
+    PRICE_ASC("Prix croissant"),
+    PRICE_DESC("Prix décroissant"),
+    RATING_DESC("Meilleures notes")
+}
