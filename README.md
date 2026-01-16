@@ -1,9 +1,3 @@
-Voici une proposition de contenu pour votre fichier `README.md`, structurée sous forme de rapport comme demandé.
-
-Vous pouvez copier-coller ce contenu directement dans votre fichier `README.md`.
-
----
-
 # Rapport de Projet - Application E-commerce Android
 
 Ce projet est une application mobile de e-commerce développée dans le cadre du module "Dev Mobile Android" (2025-2026). Elle permet aux utilisateurs de consulter des produits, de gérer un panier et de simuler des commandes, en se basant sur les données de l'API publique [FakeStoreAPI](https://fakestoreapi.com/).
