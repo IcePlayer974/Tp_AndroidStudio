@@ -1,6 +1,5 @@
 package fr.delplanque.tp_androidstudio
 
-import android.R
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,7 +26,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil.compose.AsyncImage
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.room.util.TableInfo
 import fr.delplanque.tp_androidstudio.ui.theme.Tp_AndroidStudioTheme
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -62,11 +60,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             Tp_AndroidStudioTheme {
                 val navController = rememberNavController()
-                val products by viewModel.products.collectAsState()
                 val productViewModel: ProductViewModel = viewModel()
                 val cartViewModel: CartViewModel = viewModel()
+                val products by productViewModel.products.collectAsState() // Correction ici
 
                 NavHost(navController = navController, startDestination = "productList") {
+
+                    // 1. Écran Liste
                     composable("productList") {
                         ProductListScreen(
                             viewModel = viewModel,
@@ -78,6 +78,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    // 2. Écran Détail
                     composable(
                         "productDetail/{productId}",
                         arguments = listOf(navArgument("productId") { type = NavType.IntType })
@@ -87,20 +88,27 @@ class MainActivity : ComponentActivity() {
                         product?.let {
                             ProductDetailScreen(
                                 product = it,
-                                onBack = { navController.popBackStack()},
-                                onAddToCart = { p -> cartViewModel.addToCart(p)},
-                                onGoToCart = {navController.navigate("cart")}
-                                )
+                                onBack = { navController.popBackStack() },
+                                onAddToCart = { p -> cartViewModel.addToCart(p) },
+                                onGoToCart = { navController.navigate("cart") }
+                            )
                         }
                     }
+
+                    // 3. Écran Panier (Modifié pour navigation historique)
                     composable("cart") {
                         CartScreen(
                             viewModel = cartViewModel,
-                            onBackToHome = {
-                                navController.navigate("productList") {
-                                    popUpTo("productList") { inclusive = true }
-                                }
-                            }
+                            onBackToHome = { navController.navigate("productList") { popUpTo("productList") { inclusive = true } } },
+                            onGoToHistory = { navController.navigate("history") } // Nouvelle navigation !
+                        )
+                    }
+
+                    // 4. Écran Historique (Nouveau)
+                    composable("history") {
+                        HistoryScreen(
+                            viewModel = cartViewModel,
+                            onBack = { navController.popBackStack() }
                         )
                     }
                 }

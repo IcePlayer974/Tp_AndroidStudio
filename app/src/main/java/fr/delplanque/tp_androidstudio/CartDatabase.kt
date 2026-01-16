@@ -2,6 +2,7 @@ package fr.delplanque.tp_androidstudio
 
 import android.content.Context
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName = "cart_items")
 data class CartEntity(
@@ -14,9 +15,9 @@ data class CartEntity(
 
 @Dao
 interface CartDao {
+    // --- PANIER ---
     @Query("SELECT * FROM cart_items")
-    // Utiliser Flow pour que l'UI se mette à jour automatiquement
-    fun getAll(): kotlinx.coroutines.flow.Flow<List<CartEntity>>
+    fun getAll(): Flow<List<CartEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: CartEntity)
@@ -24,13 +25,21 @@ interface CartDao {
     @Delete
     suspend fun delete(item: CartEntity)
 
-    // Pour vérifier si un produit existe déjà
     @Query("SELECT * FROM cart_items WHERE id = :id LIMIT 1")
     suspend fun getProductById(id: Int): CartEntity?
+
+    @Query("DELETE FROM cart_items")
+    suspend fun clearCart()
+
+    // --- HISTORIQUE (Nouveau) ---
+    @Insert
+    suspend fun insertOrder(order: OrderEntity)
+
+    @Query("SELECT * FROM orders ORDER BY date DESC")
+    fun getAllOrders(): Flow<List<OrderEntity>>
 }
 
-// Ajout de la configuration de la base de données
-@Database(entities = [CartEntity::class], version = 1)
+@Database(entities = [CartEntity::class, OrderEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun cartDao(): CartDao
 
@@ -44,7 +53,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "ecommerce_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }
