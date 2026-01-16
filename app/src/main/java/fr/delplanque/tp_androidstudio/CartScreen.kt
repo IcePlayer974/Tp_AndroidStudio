@@ -11,20 +11,26 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartScreen(
     viewModel: CartViewModel,
-    onBackToHome: () -> Unit
+    onBackToHome: () -> Unit,
+    navController: NavController
 ) {
-    val cartItems by viewModel.cartItems.collectAsState()
+    val cartItems by viewModel.cartItems.collectAsState(initial = emptyList())
     val total by viewModel.totalPrice.collectAsState()
+    var  showDialog by remember { mutableStateOf(false)}
+
 
     Scaffold(
         topBar = {
@@ -93,7 +99,7 @@ fun CartScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { /* Action valider */ },
+                    onClick = { showDialog = true },
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium
                 ) {
@@ -101,6 +107,25 @@ fun CartScreen(
                 }
             }
         }
+    }
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Félicitations !") },
+            text = { Text("Votre commande a été validée avec succès.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.validateOrder() // Appelle la logique
+                        showDialog = false
+                        // Optionnel : Naviguer vers l'accueil ou l'historique
+                        // navController.navigate("history")
+                    }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }
 
