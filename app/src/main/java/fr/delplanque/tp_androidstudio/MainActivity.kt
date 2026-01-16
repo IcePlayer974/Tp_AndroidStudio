@@ -24,6 +24,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil.compose.AsyncImage
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.room.util.TableInfo
 import fr.delplanque.tp_androidstudio.ui.theme.Tp_AndroidStudioTheme
 
 class MainActivity : ComponentActivity() {
@@ -45,7 +47,8 @@ class MainActivity : ComponentActivity() {
                             viewModel = viewModel,
                             onProductClick = { productId ->
                                 navController.navigate("productDetail/$productId")
-                            }
+                            },
+                            onGoToCart = { navController.navigate("cart") }
                         )
                     }
 
@@ -59,7 +62,7 @@ class MainActivity : ComponentActivity() {
                             ProductDetailScreen(
                                 product = it,
                                 onBack = { navController.popBackStack()},
-                                onAddToCart = { p -> CartViewModel.addToCart(p)},
+                                onAddToCart = { p -> cartViewModel.addToCart(p)},
                                 onGoToCart = {navController.navigate("cart")}
                                 )
                         }
@@ -73,29 +76,50 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductListScreen(viewModel: ProductViewModel, onProductClick: (Int) -> Unit) {
+fun ProductListScreen(
+    viewModel: ProductViewModel,
+    onProductClick: (Int) -> Unit,
+    onGoToCart: () -> Unit)
+{
     val products by viewModel.products.collectAsState()
     val categories by viewModel.categories.collectAsState()
     var selectedCategory by remember { mutableStateOf("all") }
 
     Scaffold(
         topBar = {
-            Column(modifier = Modifier.statusBarsPadding()) {
-                Text(
-                    text = "Mon E-Commerce",
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(16.dp)
+            Column {
+                TopAppBar(
+                    title = { Text("Mon E-commerce")},
+                    actions = {
+                        IconButton(onClick = onGoToCart) {
+                            Icon(
+                                imageVector = androidx.compose.material.icons.Icons.Default.ShoppingCart,
+                                contentDescription = "Panier"
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
                 )
-                CategorySelector(
-                    categories = categories,
-                    selectedCategory = selectedCategory,
-                    onCategorySelected = { category ->
-                        selectedCategory = category
-                        viewModel.loadProducts(category)
-                    }
-                )
+                Surface(
+                    color = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    CategorySelector(
+                        categories = categories,
+                        selectedCategory = selectedCategory,
+                        onCategorySelected = { category ->
+                            selectedCategory = category
+                            viewModel.loadProducts(category)
+                        }
+                    )
+                }
+                HorizontalDivider()
             }
+
         }
     ) { innerPadding ->
         if (products.isEmpty()) {
