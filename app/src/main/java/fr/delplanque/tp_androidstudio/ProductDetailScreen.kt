@@ -17,7 +17,7 @@ import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductDetailScreen(product: Product, onBack: () -> Unit) {
+fun ProductDetailScreen(product: Product, onBack: () -> Unit, onAddToCart: (Product) -> Unit, onGoToCart: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -64,8 +64,11 @@ fun ProductDetailScreen(product: Product, onBack: () -> Unit) {
             Text(text = product.description, style = MaterialTheme.typography.bodyLarge)
 
             Spacer(modifier = Modifier.height(32.dp))
-            Button(onClick = { /* A faire pour l'etape 4 */}, modifier = Modifier.fillMaxWidth()) {
-                Text("Aller au panier")
+            Button(onClick = {
+                                onAddToCart(product)
+                                onGoToCart()
+                             }, modifier = Modifier.fillMaxWidth()) {
+                Text("Ajouter et aller au panier")
             }
         }
     }
