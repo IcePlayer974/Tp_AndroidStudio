@@ -3,8 +3,8 @@
 Ce projet est une application Android de e-commerce moderne développée avec **Jetpack Compose**. Elle permet de parcourir des produits, de gérer un panier local et de consulter un historique de commandes.
 
 
-[Télécharger ICI ⏬](https://github.com/IcePlayer974/Tp_AndroidStudio/blob/main/ArnacShop.apk)
-<img width="32" height="32" alt="image" src="https://github.com/user-attachments/assets/ef98ee6e-2e35-4fc9-8648-985e9a126ef5" />
+[Télécharger ICI <img width="24" height="24" alt="image" src="https://github.com/user-attachments/assets/ef98ee6e-2e35-4fc9-8648-985e9a126ef5" />](https://github.com/IcePlayer974/Tp_AndroidStudio/blob/main/ArnacShop.apk)
+
 
 
 
