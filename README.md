@@ -4,6 +4,8 @@ Ce projet est une application Android de e-commerce moderne développée avec **
 
 
 [Télécharger ICI ⏬](https://github.com/IcePlayer974/Tp_AndroidStudio/blob/main/ArnacShop.apk)
+<img width="16" height="16" alt="image" src="https://github.com/user-attachments/assets/ef98ee6e-2e35-4fc9-8648-985e9a126ef5" />
+<img width="16" height="16" alt="image" src="https://github.com/user-attachments/assets/fb18e99a-1189-4ee5-be79-217bcbcbf80d" />
 
 
 ## 🚀 Fonctionnalités
@@ -57,16 +59,22 @@ L'utilisation de **Retrofit** couplée à un `ApiService` permet une gestion pro
 
 ### Acceuil 
 <img src="img/acceuil.jpg" width="30%"/>
+
 ### Sélection catégorie
 <img src="img/categorie.jpg" width="30%"/>
+
 ### Sélection élément de tri
 <img src="img/tri.jpg" width="30%"/>
+
 ### Page du détail produit
 <img src="img/detail_produit_achat.jpg" width="30%"/>
+
 ### Page du panier
 <img src="img/panier.jpg" width="30%"/>
+
 ### Confirmation d'achat
 <img src="img/confirmation.jpg" width="30%"/>
+
 ### Historique de commande 
 <img src="img/historique.jpg" width="30%"/>
 
