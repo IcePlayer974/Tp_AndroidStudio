@@ -4,8 +4,8 @@ Ce projet est une application Android de e-commerce moderne développée avec **
 
 
 [Télécharger ICI ⏬](https://github.com/IcePlayer974/Tp_AndroidStudio/blob/main/ArnacShop.apk)
-<img width="16" height="16" alt="image" src="https://github.com/user-attachments/assets/ef98ee6e-2e35-4fc9-8648-985e9a126ef5" />
-<img width="16" height="16" alt="image" src="https://github.com/user-attachments/assets/fb18e99a-1189-4ee5-be79-217bcbcbf80d" />
+<img width="32" height="32" alt="image" src="https://github.com/user-attachments/assets/ef98ee6e-2e35-4fc9-8648-985e9a126ef5" />
+
 
 
 ## 🚀 Fonctionnalités
