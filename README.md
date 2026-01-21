@@ -50,13 +50,13 @@ L'utilisation de **Retrofit** couplée à un `ApiService` permet une gestion pro
     - `ui.theme/` : Définition des couleurs, polices et thèmes Material 3.
  
 ## Aperçu du projet
-![Écran d'accueil de l'app](img/)
-![Écran choix catégorie](img/)
-![Écran choix tri](img/)
-![Écran détail produit](img/)
-![Écran panier](img/)
-![Écran validation achat](img/)
-![Écran historique de commande](img/)
+![Écran d'accueil de l'app](img/acceuil.jpg)
+![Écran choix catégorie](img/categorie.jpg)
+![Écran choix tri](img/tri.jpg)
+![Écran détail produit](img/detail_produit_achat.jpg)
+![Écran panier](img/panier.jpg)
+![Écran validation achat](img/confirmation.jpg)
+![Écran historique de commande](img/historique.jpg)
 
 ---
 *Projet réalisé par DELPLANQUE Julien et VERGNIOLE Yohann dans le cadre du module de Développement Mobile (Android) (2025-2026).*
