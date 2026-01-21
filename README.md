@@ -48,6 +48,15 @@ L'utilisation de **Retrofit** couplée à un `ApiService` permet une gestion pro
     - `MainActivity.kt` : Point d'entrée et gestion de la navigation.
     - `screens/` : Contient les différents écrans de l'application (List, Detail, Cart, History).
     - `ui.theme/` : Définition des couleurs, polices et thèmes Material 3.
+ 
+## Aperçu du projet
+![Écran d'accueil de l'app](img/)
+![Écran choix catégorie](img/)
+![Écran choix tri](img/)
+![Écran détail produit](img/)
+![Écran panier](img/)
+![Écran validation achat](img/)
+![Écran historique de commande](img/)
 
 ---
 *Projet réalisé par DELPLANQUE Julien et VERGNIOLE Yohann dans le cadre du module de Développement Mobile (Android) (2025-2026).*
