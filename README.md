@@ -43,7 +43,17 @@ L'utilisation de **Retrofit** couplée à un `ApiService` permet une gestion pro
 
 ## 🚧 Points de Blocage et Solutions
 
+Synchronisation du Panier :
+Problème : Difficulté à mettre à jour l'UI en temps réel lors de la modification des quantités.
+Solution : Utilisation de Flow dans le DAO de Room pour observer les changements en base de données et les propager instantanément via le ViewModel.
 
+Gestion de la Navigation :
+Problème : Complexité pour passer des objets complexes entre les écrans.
+Solution : Passage des identifiants (ID) dans les arguments de route et récupération de l'objet correspondant dans le ViewModel de l'écran de destination.
+
+Validation des Commandes :
+Problème : S'assurer que le panier reste persistance sauf après l'enregistrement réussi de la commande ou il est vidé.
+Solution : Utilisation de transactions ou d'opérations séquentielles dans les coroutines pour garantir l'intégrité des données.
 
 ## 📁 Structure du Projet
 
