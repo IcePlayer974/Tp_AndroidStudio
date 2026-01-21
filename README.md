@@ -54,12 +54,20 @@ L'utilisation de **Retrofit** couplée à un `ApiService` permet une gestion pro
     - `ui.theme/` : Définition des couleurs, polices et thèmes Material 3.
  
 ## Aperçu du projet
+
+### Acceuil 
 <img src="img/acceuil.jpg" width="30%"/>
+### Sélection catégorie
 <img src="img/categorie.jpg" width="30%"/>
+### Sélection élément de tri
 <img src="img/tri.jpg" width="30%"/>
+### Page du détail produit
 <img src="img/detail_produit_achat.jpg" width="30%"/>
+### Page du panier
 <img src="img/panier.jpg" width="30%"/>
+### Confirmation d'achat
 <img src="img/confirmation.jpg" width="30%"/>
+### Historique de commande 
 <img src="img/historique.jpg" width="30%"/>
 
 ---
